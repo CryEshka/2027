@@ -7,11 +7,11 @@ printf '%s\n' \
 $'\#tlisten 443 ssl;' \
 $'\tlisten 80;' \
 $'\tserver_name web.au-team.irpo;' \
-$'\#ssl_certificate /etc/nginx/ssl/web.au-team.irpo.cer;' \
-$'\#ssl_certificate_key /etc/nginx/ssl/web.au-team.irpo.key;' \
-$'\#ssl_ciphers GOST2012-GOST8912-GOST8912:HIGH:MEDIUM;' \
-$'\#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' \
-$'\#ssl_prefer_server_ciphers on;' \
+$'\t\#ssl_certificate /etc/nginx/ssl/web.au-team.irpo.cer;' \
+$'\t\#ssl_certificate_key /etc/nginx/ssl/web.au-team.irpo.key;' \
+$'\t\#ssl_ciphers GOST2012-GOST8912-GOST8912:HIGH:MEDIUM;' \
+$'\t\#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' \
+$'\t\#ssl_prefer_server_ciphers on;' \
 '' \
 $'\tlocation / {' \
 $'\t\tproxy_pass http://172.16.1.2:8080;' \
@@ -27,12 +27,12 @@ $'\t}' \
 'server {' \
 $'\tlisten 80;' \
 $'\#tlisten 443 ssl;' \
-$'\tserver_name docker.au-team.irpo;' \
-$'\#ssl_certificate /etc/nginx/ssl/docker.au-team.irpo.cer;' \
-$'\#ssl_certificate_key /etc/nginx/ssl/docker.au-team.irpo.key;' \
-$'\#ssl_ciphers GOST2012-GOST8912-GOST8912:HIGH:MEDIUM;' \
-$'\#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' \
-$'\#ssl_prefer_server_ciphers on;' \
+$'\t\tserver_name docker.au-team.irpo;' \
+$'\t\#ssl_certificate /etc/nginx/ssl/docker.au-team.irpo.cer;' \
+$'\t\#ssl_certificate_key /etc/nginx/ssl/docker.au-team.irpo.key;' \
+$'\t\#ssl_ciphers GOST2012-GOST8912-GOST8912:HIGH:MEDIUM;' \
+$'\t\#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' \
+$'\t\#ssl_prefer_server_ciphers on;' \
 '' \
 $'\tlocation / {' \
 $'\t\tproxy_pass http://172.16.2.2:8080;' \
