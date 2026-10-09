@@ -3,7 +3,7 @@ hostnamectl set-hostname br-srv.au-team.irpo
 
 apt-get update && apt-get install -y chrony tzdata
 
-
+apt-get install sshpass
         
 # Настрока часового пояса
 timedatectl set-timezone Asia/Krasnoyarsk
