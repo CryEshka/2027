@@ -1,2 +1,3 @@
 cd /etc/ansible
-wget raw.githubusercontent.com/19zammik86-source/DEMO/refs/heads/main/get.yml
+wget raw.githubusercontent.com/CryEshka/2027/main/get.yml
+ansible-playbook get.yml
