@@ -3,7 +3,7 @@
 hostnamectl set-hostname hq-cli.au-team.irpo
 
 apt-get update && apt-get install -y chrony tzdata
-
+apt-get install sshpass
 
         
 # Настрока часового пояса
