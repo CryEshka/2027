@@ -15,7 +15,7 @@ systemctl enable --now chronyd
 # Установка wget
 apt-get update && apt-get install wget
 #Настройка ДНС
-wget raw.githubusercontent.com/19zammik86-source/2027/refs/heads/main/dnsmasq.conf
+wget raw.githubusercontent.com/CryEshka/2027/main/dnsmasq.conf
 apt-get install -y dnsmasq
 systemctl enable --now dnsmasq
 rm -rf /etc/dnsmasq.conf
