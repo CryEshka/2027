@@ -1,1 +1,1 @@
-interpreter_python = /usr/bin/python3
+"/\[defaults\]/a inventory      = /etc/ansible/inventory.yml
