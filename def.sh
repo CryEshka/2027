@@ -1,4 +1,1 @@
-sed -i "/\[defaults\]/a inventory      = /etc/ansible/inventory.yml\ninterpreter_python = /usr/bin/python3\nhost_key_checking = false" /etc/ansible/ansible.cfg
-
------
-0.522505 ₽ · /balance_help
+sed -i "/\[defaults\]/a inventory      = /etc/ansible/inventory.yml\interpreter_python = /usr/bin/python3\host_key_checking = false" /etc/ansible/ansible.cfg
