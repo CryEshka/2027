@@ -3,7 +3,6 @@ apt-get update && apt-get install -y ansible sshpass
 sed -i '/\[defaults\]/a host_key_checking = false' /etc/ansible/ansible.cfg
 sed -i '/\[defaults\]/a interpreter_python = /usr/bin/python3' /etc/ansible/ansible.cfg
 sed -i '/\[defaults\]/a inventory = /etc/ansible/inventory.yml' /etc/ansible/ansible.cfg
-sei -i 
 cd /etc/ansible
 wget raw.githubusercontent.com/CryEshka/2027/main/get.yml
 wget raw.githubusercontent.com/CryEshka/2027/main/inventory.yml
