@@ -48,6 +48,7 @@ echo "Banner /etc/openssh/banner" >> /etc/openssh/sshd_config
 echo "Authorized access only" > /etc/openssh/banner
 
 # Перезапуск SSH
+systemctl enable --now sshd
 systemctl restart sshd
 
 echo "Настройка завершена:"
