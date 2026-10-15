@@ -6,7 +6,7 @@ sed -i '/\[defaults\]/a inventory = /etc/ansible/inventory.yml' /etc/ansible/ans
 cd /etc/ansible
 wget raw.githubusercontent.com/CryEshka/2027/main/get.yml
 wget raw.githubusercontent.com/CryEshka/2027/main/inventory.yml
-#
+# Айпишники
 sshpass -p 'P@ssw0rd' ssh -p 2027 -o StrictHostKeyChecking=no sshuser@192.168.0.2 exit
 sshpass -p 'P@ssw0rd' ssh -p 2027 -o StrictHostKeyChecking=no sshuser@192.168.100.1 exit
 sshpass -p 'P@ssw0rd' ssh -p 2027 -o StrictHostKeyChecking=no sshuser@192.168.200.3 exit
