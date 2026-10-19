@@ -56,3 +56,4 @@ echo "- Пользователь: sshuser (пароль: P@ssw0rd)"
 echo "- SSH порт: 2027"
 echo "- Root-логин запрещен"
 echo "- Баннер создан"
+apt-get install yandex-browser-stable
