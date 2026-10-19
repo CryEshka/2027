@@ -53,3 +53,5 @@ ln -sf /etc/nginx/sites-available.d/default.conf /etc/nginx/sites-enabled.d/
 nginx -t
 systemctl enable --now nginx
 systemctl restart nginx
+apt-get install -y openssl-gost-engine
+control openssl-gost enabled
