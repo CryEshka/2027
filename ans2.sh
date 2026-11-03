@@ -14,5 +14,5 @@ sshpass -p 'P@ssw0rd' ssh -p 2127 -o StrictHostKeyChecking=no net_admin@192.168.
 sshpass -p 'P@ssw0rd' ssh -p 2127 -o StrictHostKeyChecking=no net_admin@192.168.1.1 exit
 cd /etc/ansible
 ansible -m ping all
-ansible-playbook /etc/ansible/get.yml
-ansible-playbook /etc/ansible/get.yml
+ansible-playbook /etc/ansible/get1.yml
+ansible-playbook /etc/ansible/get1.yml
