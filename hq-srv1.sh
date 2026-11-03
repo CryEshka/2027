@@ -100,7 +100,7 @@ echo "- Настройка RESOLV"
 # Файл /etc/resolv.conf
 cat > /etc/resolv.conf <<EOF
     nameserver 127.0.0.1
-    search au-team.irpo
+    search tkhis.pro
 
 EOF
 chattr +i /etc/resolv.conf
