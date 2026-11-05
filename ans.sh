@@ -15,4 +15,3 @@ sshpass -p 'P@ssw0rd' ssh -p 2027 -o StrictHostKeyChecking=no net_admin@192.168.
 cd /etc/ansible
 ansible -m ping all
 ansible-playbook /etc/ansible/get.yml
-ansible-playbook /etc/ansible/get.yml
