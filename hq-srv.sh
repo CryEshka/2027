@@ -11,7 +11,8 @@ wget raw.githubusercontent.com/CryEshka/2027/main/cups.sh
 chmod +x cups.sh
 wget raw.githubusercontent.com/CryEshka/2027/main/fail2.sh
 chmod +x fail2.sh
-
+wget raw.githubusercontent.com/CryEshka/2027/main/1.sh
+chmod +x 1.sh
 
 apt-get update && apt-get install -y chrony tzdata
 
