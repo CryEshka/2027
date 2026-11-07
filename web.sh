@@ -1,6 +1,6 @@
 apt-get install -y lamp-server
 
-mount /dev/sr0 /mnt || true
+mount /dev/sr1 /mnt || true
 
 cp /mnt/web/index.php /var/www/html/
 cp /mnt/web/logo.png /var/www/html/
