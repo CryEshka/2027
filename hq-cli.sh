@@ -1,7 +1,8 @@
 #!/bin/bash
 
 hostnamectl set-hostname hq-cli.au-team.irpo
-
+wget raw.githubusercontent.com/CryEshka/2027/main/2.sh
+chmod +x 2.sh
 apt-get update && apt-get install -y chrony tzdata
 apt-get install sshpass
 
