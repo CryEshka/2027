@@ -5,12 +5,9 @@ hostnamectl set-hostname br-rtr.au-team.irpo
 apt-get update && apt-get install -y chrony tzdata
 apt-get install sshpass
 
-        
 # Настрока часового пояса
 timedatectl set-timezone Asia/Krasnoyarsk
 
-
-        
 # Настройка маршутизации
 sed -i "s/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/" "/etc/net/sysctl.conf"
 
@@ -111,6 +108,5 @@ ping 10.10.10.1
 #Проверка OSPF
 ping 192.168.100.1
 
-
-
 echo "Готово! ."
+exec bash
