@@ -4,13 +4,9 @@ hostnamectl set-hostname br-fw.au-team.irpo
 
 apt-get update && apt-get install -y chrony tzdata
 
-
-        
 # Настрока часового пояса
 timedatectl set-timezone Asia/Krasnoyarsk
 
-
-        
 # Настройка маршутизации
 sed -i "s/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/" "/etc/net/sysctl.conf"
 
@@ -50,4 +46,4 @@ EOF
 
 systemctl restart network
 systemctl restart  frr 
-
+exec bash
