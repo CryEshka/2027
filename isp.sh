@@ -65,3 +65,7 @@ systemctl restart sshd.service
 apt-get update
 
 exec bash
+wget raw.githubusercontent.com/CryEshka/2027/main/proxycat.sh
+chmod +x proxycat.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/nginx.sh
+chmod +x nginx.sh
