@@ -1,6 +1,15 @@
 #!/bin/bash
 hostnamectl set-hostname br-srv.au-team.irpo
 
+wget raw.githubusercontent.com/CryEshka/2027/main/ans.sh
+chmod +x ans.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/web.sh
+chmod +x web.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/samba.sh
+chmod +x samba.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/user.sh
+chmod +x user.sh
+
 apt-get update && apt-get install -y chrony tzdata
 
 apt-get install sshpass
@@ -48,9 +57,4 @@ echo "- Баннер создан"
 echo "- Скачиваем файл инвентаря"
 apt-get update && apt-get install -y ansible sshpass 
 ansible -m ping all
-wget raw.githubusercontent.com/CryEshka/2027/main/ans.sh
-chmod +x ans.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/samba.sh
-chmod +x samba.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/user.sh
-chmod +x user.sh
+exec bash
