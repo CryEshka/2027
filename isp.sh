@@ -4,6 +4,10 @@
 # Настройка hostname
 hostnamectl set-hostname isp.au-team.irpo
 
+wget raw.githubusercontent.com/CryEshka/2027/main/proxycat.sh
+chmod +x proxycat.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/nginx.sh
+chmod +x nginx.sh
 
 # Настрока часового пояса
 apt-get update && apt-get install -y chrony tzdata
@@ -65,8 +69,3 @@ systemctl restart sshd.service
 apt-get update
 
 exec bash
-
-wget raw.githubusercontent.com/CryEshka/2027/main/proxycat.sh
-chmod +x proxycat.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/nginx.sh
-chmod +x nginx.sh
