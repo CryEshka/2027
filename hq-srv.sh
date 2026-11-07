@@ -1,6 +1,18 @@
 #!/bin/bash
 hostnamectl set-hostname hq-srv.au-team.irpo
 
+wget raw.githubusercontent.com/CryEshka/2027/main/web.sh
+chmod +x web.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/gost.sh
+chmod +x gost.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/atop.sh
+chmod +x atop.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/cups.sh
+chmod +x cups.sh
+wget raw.githubusercontent.com/CryEshka/2027/main/fail2.sh
+chmod +x fail2.sh
+
+
 apt-get update && apt-get install -y chrony tzdata
 
 apt-get install sshpass
@@ -105,13 +117,4 @@ cat > /etc/resolv.conf <<EOF
 EOF
 chattr +i /etc/resolv.conf
 
-wget raw.githubusercontent.com/CryEshka/2027/main/web.sh
-chmod +x web.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/gost.sh
-chmod +x gost.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/atop.sh
-chmod +x atop.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/cups.sh
-chmod +x cups.sh
-wget raw.githubusercontent.com/CryEshka/2027/main/fail2.sh
-chmod +x fail2.sh
+exec bash
