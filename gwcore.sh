@@ -4,7 +4,7 @@ hostnamectl set-hostname gw-core.ssa.prof
 hostname -f
 
 # 2. Учётная запись и пароль
-useradd -m 'master:P@ssw0rd'| chpasswd
+useradd -m master && echo 'master:P@ssw0rd'| chpasswd
 
 # 3. Настройка sudo БЕЗ запроса пароля
 apt-get install sudo
