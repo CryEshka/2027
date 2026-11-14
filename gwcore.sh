@@ -14,13 +14,16 @@ usermod -aG wheel master
 echo "master ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/master
 
 # Получаем IP-адрес по DHCP на интерфейсе ens19 (внешняя сеть)
-echo "TYPE=eth" > /etc/net/ifaces/ens19/options
-echo "BOOTPROTO=dhcp" >> /etc/net/ifaces/ens19/options
+echo "TYPE=eth" > /etc/net/ifaces/ens18/options
+echo "BOOTPROTO=dhcp" >> /etc/net/ifaces/ens18/options
 systemctl restart network
 
 # Создаём директории для внутренних интерфейсов и dummy0
-mkdir -p /etc/net/ifaces/ens20 /etc/net/ifaces/ens21 
-mkdir -p/etc/net/ifaces/ens22 /etc/net/ifaces/dummy0
+mkdir -p /etc/net/ifaces/ens19  /etc/net/ifaces/ens19 
+mkdir -p /etc/net/ifaces/ens20 /etc/net/ifaces/ens20
+mkdir -p /etc/net/ifaces/ens21 /etc/net/ifaces/ens21
+mkdir -p /etc/net/ifaces/dummy0/options
+
 
 # Создаём файл options для каждого интерфейса
 echo "TYPE=eth" > /etc/net/ifaces/ens20/options
