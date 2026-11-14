@@ -49,3 +49,35 @@ sed -i 's/isisd=no/isisd=yes/g' /etc/frr/daemons
 systemctl enable --now frr
 # 5. Проверяем запуск демонов
 ss -tulpn | grep -E 'bgp|isis'
+
+vtysh
+configure terminal
+! === Настройка IS-IS ===
+router isis 1
+ is-type level-1
+ net 49.0000.0440.4404.4044.00
+ metric-style wide
+ exit
+interface dummy0
+ ip router isis 1
+ exit
+interface ens20
+ ip router isis 1
+ exit
+interface ens21
+ ip router isis 1
+ exit
+interface ens22
+ ip router isis 1
+ exit
+! === Настройка BGP ===
+router bgp 64499
+ bgp router-id 44.44.44.44
+ no bgp ebgp-requires-policy
+ neighbor 11.11.11.11 remote-as 64499
+ neighbor 22.22.22.22 remote-as 64499
+ neighbor 33.33.33.33 remote-as 64499
+ address-family ipv4 unicast
+ neighbor 11.11.11.11 default-originate
+ neighbor 22.22.22.22 default-originate
+ neighbor 33.33.33.33 default-originat
