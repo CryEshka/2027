@@ -19,11 +19,10 @@ echo "BOOTPROTO=dhcp" >> /etc/net/ifaces/ens18/options
 systemctl restart network
 
 # Создаём директории для внутренних интерфейсов и dummy0
-mkdir -p /etc/net/ifaces/ens19  /etc/net/ifaces/ens19 
-mkdir -p /etc/net/ifaces/ens20 /etc/net/ifaces/ens20
-mkdir -p /etc/net/ifaces/ens21 /etc/net/ifaces/ens21
-mkdir -p /etc/net/ifaces/dummy0/options
-
+mkdir -p /etc/net/ifaces/ens19
+mkdir -p /etc/net/ifaces/ens20
+mkdir -p /etc/net/ifaces/ens21
+mkdir -p /etc/net/ifaces/dummy0
 
 # Создаём файл options для каждого интерфейса
 echo "TYPE=eth" > /etc/net/ifaces/ens20/options
