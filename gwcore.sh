@@ -1,3 +1,4 @@
+#!/bin/bash
 # 1. Имя хоста и домен
 hostnamectl set-hostname gw-core.ssa.prof; exec bash
 hostname -f
