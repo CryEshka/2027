@@ -25,9 +25,9 @@ mkdir -p /etc/net/ifaces/ens21
 mkdir -p /etc/net/ifaces/dummy0
 
 # Создаём файл options для каждого интерфейса
+echo "TYPE=eth" > /etc/net/ifaces/ens19/options
 echo "TYPE=eth" > /etc/net/ifaces/ens20/options
 echo "TYPE=eth" > /etc/net/ifaces/ens21/options
-echo "TYPE=eth" > /etc/net/ifaces/ens22/options
 echo "TYPE=dummy" > /etc/net/ifaces/dummy0/options
 
 # Назначаем IP-адреса в соответствии с L3-топологией
