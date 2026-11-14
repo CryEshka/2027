@@ -50,7 +50,8 @@ systemctl enable --now frr
 # 5. Проверяем запуск демонов
 ss -tulpn | grep -E 'bgp|isis'
 
-vtysh
+vtysh << 'EOF'
+enable
 configure terminal
 ! === Настройка IS-IS ===
 router isis 1
@@ -81,3 +82,8 @@ router bgp 64499
  neighbor 11.11.11.11 default-originate
  neighbor 22.22.22.22 default-originate
  neighbor 33.33.33.33 default-originat
+exit
+ exit
+exit
+write
+exit
