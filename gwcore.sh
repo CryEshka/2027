@@ -1,6 +1,6 @@
 #!/bin/bash
 # 1. Имя хоста и домен
-hostnamectl set-hostname gw-core.ssa.prof; exec bash
+hostnamectl set-hostname gw-core.ssa.prof
 hostname -f
 
 # 2. Учётная запись и пароль
