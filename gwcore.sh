@@ -74,7 +74,7 @@ interface ens21
 interface ens22
  ip router isis 1
  exit
-! === Настройка BGP ===
+#! === Настройка BGP ===
 router bgp 64499
  bgp router-id 44.44.44.44
  no bgp ebgp-requires-policy
