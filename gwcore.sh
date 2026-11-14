@@ -31,9 +31,9 @@ echo "TYPE=eth" > /etc/net/ifaces/ens21/options
 echo "TYPE=dummy" > /etc/net/ifaces/dummy0/options
 
 # Назначаем IP-адреса в соответствии с L3-топологией
-echo "84.212.78.1/27" > /etc/net/ifaces/ens20/ipv4address # К GW-1
-echo "63.27.18.1/23" > /etc/net/ifaces/ens21/ipv4address # К GW-2
-echo "34.95.33.1/24" > /etc/net/ifaces/ens22/ipv4address # К GW-3
+echo "84.212.78.1/27" > /etc/net/ifaces/ens19/ipv4address # К GW-1
+echo "63.27.18.1/23" > /etc/net/ifaces/ens20/ipv4address # К GW-2
+echo "34.95.33.1/24" > /etc/net/ifaces/ens21/ipv4address # К GW-3
 echo "44.44.44.44/32" > /etc/net/ifaces/dummy0/ipv4address # Loopback
 
 # 1. Включаем пересылку пакетов (forwarding)
