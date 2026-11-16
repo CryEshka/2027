@@ -93,6 +93,7 @@ exit
 EOF
 
 # 1. Создаём таблицу nat
+apt-get install nftables.service -y
 nft add table ip nat
 
 # 2. Создаём цепочку postrouting
