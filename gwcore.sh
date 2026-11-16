@@ -93,7 +93,7 @@ exit
 EOF
 
 # 1. Создаём таблицу nat
-apt-get install nftables.service -y
+apt-get install nftables -y
 nft add table ip nat
 
 # 2. Создаём цепочку postrouting
@@ -110,7 +110,7 @@ nft list ruleset | tee -a /etc/nftables/nftables.nft
 nft flush ruleset
 
 # 6. Включаем службу в автозагрузку
-systemctl enable --now nftables.service
+systemctl enable --now nftables
 
 # 7. Проверяем
 nft list ruleset
