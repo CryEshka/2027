@@ -1,0 +1,533 @@
+GW-1 (EcoRouterOS-Pesto)
+enable
+configure terminal
+hostname gw-1
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+ password P@ssw0rd
+ role admin
+exit
+username admin
+ deactivate
+exit
+exit
+
+configure terminal
+interface int0
+ description "Connect GW-CORE"
+ ip address 84.212.78.10/27
+exit
+port ge0
+ service-instance GW-CORE
+  encapsulation untagged
+  connect ip interface int0
+ exit
+exit
+interface loopback.0
+ ip address 11.11.11.11/32
+exit
+interface int1
+ description "Connect COD-GW"
+ ip address 78.23.0.97/29
+exit
+port ge1
+ service-instance ISP
+  encapsulation untagged
+  connect ip interface int1
+ exit
+exit
+exit
+write memory
+show ip interface brief
+ping 84.212.78.1
+
+configure terminal
+router isis 1
+ is-type level-1
+ net 49.0000.0110.1101.1011.00
+ metric-style wide
+exit
+interface int0
+ ip router isis 1
+exit
+interface loopback.0
+ ip router isis 1
+exit
+router bgp 64499
+ bgp router-id 11.11.11.11
+ neighbor 44.44.44.44 remote-as 64499
+ neighbor 44.44.44.44 update-source loopback.0
+ neighbor 55.55.55.55 remote-as 65005
+ neighbor 55.55.55.55 update-source loopback.0
+ neighbor 55.55.55.55 ebgp-multihop 2
+ neighbor 55.55.55.55 default-originate
+ network 78.23.0.96/29
+ redistribute ospf
+exit
+exit
+write memory
+show isis topology
+show ip route isis
+show ip bgp summary
+
+configure terminal
+router ospf 1
+ router-id 11.11.11.11
+ network 11.11.11.11/32 area 0
+ network 78.23.0.96/29 area 0
+ passive-interface default
+ no passive-interface int1
+exit
+write memory
+
+GW-2 (EcoRouterOS-Pesto)
+enable
+configure terminal
+hostname gw-2
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+ password P@ssw0rd
+ role admin
+exit
+username admin
+ deactivate
+exit
+exit
+
+configure terminal
+interface int0
+ description "Connect GW-CORE"
+ ip address 63.27.18.57/23
+exit
+port ge0
+ service-instance GW-CORE
+  encapsulation untagged
+  connect ip interface int0
+ exit
+exit
+interface loopback.0
+ ip address 22.22.22.22/32
+exit
+interface int1
+ description "Connect ZSPD-SW"
+ ip address 78.23.0.65/27
+exit
+port ge1
+ service-instance ISP
+  encapsulation dot1q 17 exact
+  rewrite pop 1
+  connect ip interface int1
+ exit
+exit
+exit
+write memory
+ping 63.27.18.1
+
+configure terminal
+router isis 1
+ is-type level-1
+ net 49.0000.0220.2202.2022.00
+ metric-style wide
+exit
+interface int0
+ ip router isis 1
+exit
+interface loopback.0
+ ip router isis 1
+exit
+router bgp 64499
+ bgp router-id 22.22.22.22
+ neighbor 44.44.44.44 remote-as 64499
+ neighbor 44.44.44.44 update-source loopback.0
+ network 78.23.0.64/27
+exit
+exit
+write memory
+show ip bgp summary
+
+GW-3 (EcoRouterOS-Pesto)
+enable
+configure terminal
+hostname gw-3
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+ password P@ssw0rd
+ role admin
+exit
+username admin
+ deactivate
+exit
+exit
+
+configure terminal
+interface int0
+ description "Connect GW-CORE"
+ ip address 34.95.33.229/24
+exit
+port ge0
+ service-instance GW-CORE
+  encapsulation untagged
+  connect ip interface int0
+ exit
+exit
+interface loopback.0
+ ip address 33.33.33.33/32
+exit
+interface int1
+ description "Connect PROVIDER-SW"
+ ip address 78.23.0.1/26
+exit
+port ge1
+ service-instance ISP
+  encapsulation dot1q 25 exact
+  rewrite pop 1
+  connect ip interface int1
+ exit
+exit
+exit
+write memory
+ping 34.95.33.1
+
+configure terminal
+router isis 1
+ is-type level-1
+ net 49.0000.0330.3303.3033.00
+ metric-style wide
+exit
+interface int0
+ ip router isis 1
+exit
+interface loopback.0
+ ip router isis 1
+exit
+router bgp 64499
+ bgp router-id 33.33.33.33
+ neighbor 44.44.44.44 remote-as 64499
+ neighbor 44.44.44.44 update-source loopback.0
+ network 78.23.0.0/26
+exit
+exit
+write memory
+show ip bgp summary
+
+PROVIDER-SW (Альт Сервер 11)
+hostnamectl set-hostname provider-sw.ssa.prof; exec bash
+hostname -f
+useradd master
+passwd master
+
+ip link add link ens19 name ens19.25 type vlan id 25
+ip link set ens19.25 up
+ip addr add 78.23.0.2/26 dev ens19.25
+ip route add 0.0.0.0/0 via 78.23.0.1
+echo "nameserver 77.88.8.8" > /etc/resolv.conf
+ping -c3 ya.ru
+
+apt-get update && apt-get install -y openvswitch
+sed -i "s/OVS_REMOVE=yes/OVS_REMOVE=no/g" /etc/net/ifaces/default/options
+systemctl enable --now openvswitch.service
+reboot
+
+echo "TYPE=eth" > /etc/net/ifaces/ens19/options
+cp -r /etc/net/ifaces/ens19 /etc/net/ifaces/ens20
+cp -r /etc/net/ifaces/ens19 /etc/net/ifaces/ens21
+mkdir /etc/net/ifaces/PROVIDER-SW
+cat <<EOF > /etc/net/ifaces/PROVIDER-SW/options
+TYPE=ovsbr
+HOST='ens19'
+EOF
+mkdir /etc/net/ifaces/ISP
+cat <<EOF > /etc/net/ifaces/ISP/options
+TYPE=ovsport
+BRIDGE=PROVIDER-SW
+VID=25
+EOF
+echo "78.23.0.2/26" > /etc/net/ifaces/ISP/ipv4address
+echo "default via 78.23.0.1" > /etc/net/ifaces/ISP/ipv4route
+echo "nameserver 44.44.44.44" > /etc/net/ifaces/ISP/resolv.conf
+systemctl restart network
+
+ovs-vsctl add-bond PROVIDER-SW bond0 ens20 ens21
+ovs-vsctl set port bond0 lacp=active
+ovs-vsctl set Port ens19 trunks=25
+ovs-vsctl set Port bond0 trunks=25
+ovs-vsctl show
+ping -c3 77.88.8.8
+
+PROVIDER-GW (EcoRouterOS-Pesto)
+text
+enable
+configure terminal
+hostname provider-gw
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+ password P@ssw0rd
+ role admin
+exit
+exit
+write memory
+
+configure terminal
+port ae.1
+ bind ge0
+ bind ge1
+ lacp mode active
+ lacp enable
+exit
+exit
+write memory
+show port brief
+show lacp neighbor
+
+configure terminal
+interface ISP
+ description "Connect PROVIDER-SW"
+ ip address 78.23.0.3/26
+exit
+port ae.1
+ service-instance ISP
+  encapsulation dot1q 25 exact
+  rewrite pop 1
+  connect ip interface ISP
+ exit
+exit
+ip route 0.0.0.0/0 78.23.0.1
+exit
+write memory
+show ip interface brief
+ping 77.88.8.8
+
+ZSPD-SW (Альт Сервер 11)
+bash
+hostnamectl set-hostname zspd-sw.ssa.prof; exec bash
+hostname -f
+useradd master
+passwd master
+
+ip link add link ens19 name ens19.17 type vlan id 17
+ip link set dev ens19.17 up
+ip addr add 78.23.0.67/27 dev ens19.17
+ip route add 0.0.0.0/0 via 78.23.0.65
+echo "nameserver 77.88.8.8" > /etc/resolv.conf
+ping -c3 ya.ru
+
+apt-get update && apt-get install -y openvswitch
+sed -i "s/OVS_REMOVE=yes/OVS_REMOVE=no/g" /etc/net/ifaces/default/options
+systemctl enable --now openvswitch.service
+reboot
+
+echo "TYPE=eth" > /etc/net/ifaces/ens19/options
+cp -r /etc/net/ifaces/ens19 /etc/net/ifaces/ens20
+mkdir /etc/net/ifaces/ZSPD-SW
+cat <<EOF > /etc/net/ifaces/ZSPD-SW/options
+TYPE=ovsbr
+HOST='ens19 ens20'
+EOF
+mkdir /etc/net/ifaces/ISP
+cat <<EOF > /etc/net/ifaces/ISP/options
+TYPE=ovsport
+BRIDGE=ZSPD-SW
+VID=17
+EOF
+echo '78.23.0.67/27' > /etc/net/ifaces/ISP/ipv4address
+echo 'default via 78.23.0.65' > /etc/net/ifaces/ISP/ipv4route
+echo 'nameserver 44.44.44.44' > /etc/net/ifaces/ISP/resolv.conf
+systemctl restart network
+
+ovs-vsctl set Port ens19 trunks=17
+ovs-vsctl set Port ens20 tag=17
+ovs-vsctl show
+ping -c3 77.88.8.8
+
+COD-GW (EcoRouterOS-Pesto, с enable secret)
+text
+enable
+configure terminal
+hostname cod-gw
+ip domain-name cod.ssa.prof
+write memory
+service password-encryption
+enable secret P@ssw0rd
+username master
+ password P@ssw0rd
+ role admin
+exit
+exit
+write memory
+
+configure terminal
+interface int0
+ description "Connect GW-1"
+ ip address 78.23.0.98/29
+exit
+port ge0
+ service-instance ISP
+  encapsulation untagged
+  connect ip interface int0
+ exit
+exit
+interface loopback.0
+ ip address 55.55.55.55/32
+exit
+interface COD
+ description "VLAN 10"
+ ip address 192.168.10.1/24
+exit
+interface DATA
+ description "VLAN 20"
+ ip address 192.168.20.1/24
+exit
+interface PUBLIC
+ description "VLAN 30"
+ ip address 212.78.93.1/24
+exit
+port ge1
+ service-instance COD
+  encapsulation dot1q 10 exact
+  rewrite pop 1
+  connect ip interface COD
+ exit
+ service-instance DATA
+  encapsulation dot1q 20 exact
+  rewrite pop 1
+  connect ip interface DATA
+ exit
+ service-instance PUBLIC
+  encapsulation dot1q 30 exact
+  rewrite pop 1
+  connect ip interface PUBLIC
+ exit
+exit
+exit
+write memory
+
+configure terminal
+policy-filter-list 10 permit 11.11.11.11 0.0.0.0
+policy-filter-list 10 deny any
+router ospf 1
+ router-id 55.55.55.55
+ distribute-list 10 in
+ network 55.55.55.55/32 area 0
+ network 78.23.0.96/29 area 0
+ passive-interface default
+ no passive-interface int0
+exit
+router bgp 65005
+ bgp router-id 55.55.55.55
+ neighbor 11.11.11.11 remote-as 64499
+ neighbor 11.11.11.11 ebgp-multihop 2
+ neighbor 11.11.11.11 update-source loopback.0
+ network 212.78.93.0/24
+exit
+exit
+write memory
+
+configure terminal
+interface int0
+ ip nat outside
+exit
+interface COD
+ ip nat inside
+exit
+interface DATA
+ ip nat inside
+exit
+ip nat pool COD 192.168.10.1-192.168.10.254
+ip nat pool DATA 192.168.20.1-192.168.20.254
+ip nat source dynamic inside-to-outside pool COD overload interface int0
+ip nat source dynamic inside-to-outside pool DATA overload interface int0
+exit
+write memory
+show running-config | include nat
+
+COD-SW-CORE (Альт Сервер 11, sudo PASSWD)
+bash
+hostnamectl set-hostname cod-sw-core.cod.ssa.prof; exec bash
+hostname -f
+useradd master
+passwd master
+control sudo
+control sudo help
+usermod -aG wheel master
+echo "master ALL=(ALL:ALL) PASSWD: ALL" > /etc/sudoers.d/master
+
+ip link add link ens19 name ens19.10 type vlan id 10
+ip link set dev ens19.10 up
+ip addr add 192.168.10.2/24 dev ens19.10
+ip route add 0.0.0.0/0 via 192.168.10.1
+echo "nameserver 77.88.8.8" > /etc/resolv.conf
+ping -c3 ya.ru
+
+apt-get update && apt-get install -y openvswitch
+sed -i "s/OVS_REMOVE=yes/OVS_REMOVE=no/g" /etc/net/ifaces/default/options
+systemctl enable --now openvswitch.service
+reboot
+
+echo "TYPE=eth" > /etc/net/ifaces/ens19/options
+cp -r /etc/net/ifaces/ens19/ /etc/net/ifaces/ens20
+cp -r /etc/net/ifaces/ens19/ /etc/net/ifaces/ens21
+cp -r /etc/net/ifaces/ens19/ /etc/net/ifaces/ens22
+cp -r /etc/net/ifaces/ens19/ /etc/net/ifaces/ens29
+cp -r /etc/net/ifaces/ens19/ /etc/net/ifaces/ens12
+mkdir /etc/net/ifaces/COD-SW-CORE
+cat <<EOF > /etc/net/ifaces/COD-SW-CORE/options
+TYPE=ovsbr
+HOST='ens19 ens20 ens21 ens22 ens29 ens12'
+EOF
+mkdir /etc/net/ifaces/MGMT
+cat <<EOF > /etc/net/ifaces/MGMT/options
+TYPE=ovsport
+BRIDGE=COD-SW-CORE
+VID=10
+EOF
+echo '192.168.10.2/24' > /etc/net/ifaces/MGMT/ipv4address
+echo 'default via 192.168.10.1' > /etc/net/ifaces/MGMT/ipv4route
+echo 'nameserver 192.168.10.5' > /etc/net/ifaces/MGMT/resolv.conf
+systemctl restart network
+
+ovs-vsctl set Port ens19 trunks=10,20,30
+ovs-vsctl set Port ens20 tag=10
+ovs-vsctl set Port ens21 tag=20
+ovs-vsctl set Port ens22 tag=10
+ovs-vsctl set Port ens29 tag=30
+ovs-vsctl set Port ens12 tag=10
+ovs-vsctl show
+ping -c3 77.88.8.8
+
+COD-ADMIN (Альт Рабочая станция 11, sudo PASSWD)
+bash
+hostnamectl set-hostname cod-admin.cod.ssa.prof; exec bash
+hostname -f
+useradd master
+passwd master
+control sudo
+control sudo help
+usermod -aG wheel master
+echo "master ALL=(ALL:ALL) PASSWD: ALL" > /etc/sudoers.d/master
+
+COD-SRV (Альт Сервер 11)
+bash
+hostnamectl set-hostname cod-srv.cod.ssa.prof; exec bash
+hostname -f
+useradd master
+passwd master
+DATA (Альт Сервер 11, без домена)
+bash
+hostnamectl set-hostname data; exec bash
+hostname
+useradd master
+passwd master
+PUB (Альт Сервер 11, без домена)
+bash
+hostnamectl set-hostname pub; exec bash
+hostname
+useradd master
+passwd master
