@@ -56,7 +56,6 @@ ss -tulpn | grep -E 'bgp|isis'
 vtysh << 'EOF'
 enable
 configure terminal
-! === Настройка IS-IS ===
 router isis 1
  is-type level-1
  net 49.0000.0440.4404.4044.00
