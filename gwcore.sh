@@ -1,5 +1,6 @@
 #!/bin/bash
 # 1. Имя хоста и домен
+apt-get update
 hostnamectl set-hostname gw-core.ssa.prof
 hostname -f
 
