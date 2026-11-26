@@ -92,7 +92,7 @@ write
 exit
 EOF
 
-apt-get install iptables
+apt-get install iptables -y 
 iptables -t nat -A POSTROUTING -o ens18 -j MASQUERADE
 iptables-save > /etc/sysconfig/iptables
 systemctl enable --now iptables
