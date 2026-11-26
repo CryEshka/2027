@@ -94,7 +94,8 @@ EOF
 
 apt-get install iptables
 iptables -t nat -A POSTROUTING -o ens18 -j MASQUERADE
-iptables-save > /etc/sysctl.conf/iptables
+iptables-save > /etc/sysconfig/iptables
+systemctl enable --now iptables
  
 # 7. Проверяем
 hostname -f
