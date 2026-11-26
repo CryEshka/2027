@@ -1,0 +1,66 @@
+enable
+configure terminal
+hostname gw-3
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+ password P@ssw0rd
+ role admin
+exit
+username admin
+ deactivate
+exit
+exit
+
+enable
+configure terminal
+interface int0
+description "Connect GW-CORE"
+ip address 34.95.33.229/24
+exit
+port ge0
+service-instance GW-CORE
+encapsulation untagged
+connect ip interface int0
+exit
+exit
+interface loopback.0
+ip address 33.33.33.33/32
+exit
+interface int1
+description "Connect PROVIDER-SW"
+ip address 78.23.0.1/26
+exit
+port ge1
+service-instance ISP
+encapsulation dot1q 25 exact
+rewrite pop 1
+connect ip interface int1
+exit
+exit
+exit
+write memory
+ping 34.95.33.1
+
+configure terminal
+router isis 1
+is-type level-1
+net 49.0000.0330.3303.3033.00
+metric-style wide
+exit
+interface int0
+ip router isis 1
+exit
+interface loopback.0
+ip router isis 1
+exit
+router bgp 64499
+bgp router-id 33.33.33.33
+neighbor 44.44.44.44 remote-as 64499
+neighbor 44.44.44.44 update-source loopback.0
+network 78.23.0.0/26
+exit
+exit
+write memory
+show ip bgp summary

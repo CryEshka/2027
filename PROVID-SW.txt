@@ -1,0 +1,85 @@
+hostnamectl set-hostname provider-sw.ssa.prof; exec bash
+hostname -f
+useradd -m master && echo 'master:P@ssw0rd'| chpasswd
+
+ip link add link ens18 name ens18.25 type vlan id 25
+ip link set ens18.25 up
+ip addr add 78.23.0.2/26 dev ens18.25
+ip route add 0.0.0.0/0 via 78.23.0.1
+echo "nameserver 77.88.8.8" > /etc/resolv.conf
+ping -c3 ya.ru
+
+apt-get update && apt-get install -y openvswitch
+sed -i "s/OVS_REMOVE=yes/OVS_REMOVE=no/g" /etc/net/ifaces/default/options
+systemctl enable --now openvswitch.service
+reboot
+
+echo "TYPE=eth" > /etc/net/ifaces/ens18/options
+cp -r /etc/net/ifaces/ens18 /etc/net/ifaces/ens19
+cp -r /etc/net/ifaces/ens18 /etc/net/ifaces/ens20
+mkdir /etc/net/ifaces/PROVIDER-SW
+cat <<EOF > /etc/net/ifaces/PROVIDER-SW/options
+TYPE=ovsbr
+HOST='ens18'
+EOF
+mkdir /etc/net/ifaces/ISP
+cat <<EOF > /etc/net/ifaces/ISP/options
+TYPE=ovsport
+BRIDGE=PROVIDER-SW
+VID=25
+EOF
+echo "78.23.0.2/26" > /etc/net/ifaces/ISP/ipv4address
+echo "default via 78.23.0.1" > /etc/net/ifaces/ISP/ipv4route
+echo "nameserver 44.44.44.44" > /etc/net/ifaces/ISP/resolv.conf
+systemctl restart network
+
+ovs-vsctl add-bond PROVIDER-SW bond0 ens20 ens21
+ovs-vsctl set port bond0 lacp=active
+ovs-vsctl set Port ens19 trunks=25
+ovs-vsctl set Port bond0 trunks=25
+ovs-vsctl show
+ping -c3 77.88.8.8
+
+PROVIDER-GW (EcoRouterOS-Pesto)
+enable
+configure terminal
+hostname provider-gw
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+password P@ssw0rd
+role admin
+exit
+exit
+write memory
+
+configure terminal
+port ae.1
+bind ge0
+bind ge1
+lacp mode active
+lacp enable
+exit
+exit
+write memory
+show port brief
+show lacp neighbor
+
+configure terminal
+interface ISP
+ description "Connect PROVIDER-SW"
+ ip address 78.23.0.3/26
+exit
+port ae.1
+ service-instance ISP
+  encapsulation dot1q 25 exact
+  rewrite pop 1
+  connect ip interface ISP
+ exit
+exit
+ip route 0.0.0.0/0 78.23.0.1
+exit
+write memory
+show ip interface brief
+ping 77.88.8.8
