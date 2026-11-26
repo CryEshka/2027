@@ -1,0 +1,82 @@
+enable
+configure terminal
+hostname gw-1
+ip domain-name ssa.prof
+write memory
+service password-encryption
+username master
+password P@ssw0rd
+role admin
+exit
+username admin
+deactivate
+exit
+exit
+
+enable
+configure terminal
+interface int0
+description "Connect GW-CORE"
+ip address 84.212.78.10/27
+exit
+port ge0
+service-instance GW-CORE
+encapsulation untagged
+connect ip interface int0
+exit
+exit
+interface loopback.0
+ip address 11.11.11.11/32
+exit
+interface int1
+description "Connect COD-GW"
+ip address 78.23.0.97/29
+exit
+port ge1
+service-instance ISP
+encapsulation untagged
+connect ip interface int1
+exit
+exit
+exit
+write memory
+show ip interface brief
+
+configure terminal
+router isis 1
+is-type level-1
+net 49.0000.0110.1101.1011.00
+metric-style wide
+xit
+interface int0
+ip router isis 1
+exit
+interface loopback.0
+ip router isis 1
+exit
+router bgp 64499
+bgp router-id 11.11.11.11
+neighbor 44.44.44.44 remote-as 64499
+neighbor 44.44.44.44 update-source loopback.0
+neighbor 55.55.55.55 remote-as 65005
+neighbor 55.55.55.55 update-source loopback.0
+neighbor 55.55.55.55 ebgp-multihop 2
+neighbor 55.55.55.55 default-originate
+network 78.23.0.96/29
+redistribute ospf
+exit
+exit
+write memory
+show isis topology
+show ip route isis
+show ip bgp summary
+
+configure terminal
+router ospf 1
+router-id 11.11.11.11
+network 11.11.11.11/32 area 0
+network 78.23.0.96/29 area 0
+passive-interface default
+no passive-interface int1
+exit
+write memory

@@ -1,0 +1,98 @@
+enable
+configure terminal
+hostname cod-gw
+ip domain-name cod.ssa.prof
+write memory
+service password-encryption
+enable secret P@ssw0rd
+username master
+password P@ssw0rd
+role admin
+exit
+exit
+write memory
+
+configure terminal
+interface int0
+description "Connect GW-1"
+ip address 78.23.0.98/29
+exit
+port ge0
+service-instance ISP
+encapsulation untagged
+connect ip interface int0
+exit
+exit
+interface loopback.0
+ip address 55.55.55.55/32
+exit
+interface COD
+description "VLAN 10"
+ip address 192.168.10.1/24
+exit
+interface DATA
+description "VLAN 20"
+ip address 192.168.20.1/24
+exit
+interface PUBLIC
+description "VLAN 30"
+ip address 212.78.93.1/24
+exit
+port ge1
+service-instance COD
+encapsulation dot1q 10 exact
+rewrite pop 1
+connect ip interface COD
+exit
+service-instance DATA
+encapsulation dot1q 20 exact
+rewrite pop 1
+connect ip interface DATA
+exit
+service-instance PUBLIC
+encapsulation dot1q 30 exact
+rewrite pop 1
+connect ip interface PUBLIC
+exit
+exit
+exit
+write memory
+
+configure terminal
+policy-filter-list 10 permit 11.11.11.11 0.0.0.0
+policy-filter-list 10 deny any
+router ospf 1
+router-id 55.55.55.55
+distribute-list 10 in
+network 55.55.55.55/32 area 0
+network 78.23.0.96/29 area 0
+passive-interface default
+no passive-interface int0
+exit
+router bgp 65005
+bgp router-id 55.55.55.55
+neighbor 11.11.11.11 remote-as 64499
+neighbor 11.11.11.11 ebgp-multihop 2
+neighbor 11.11.11.11 update-source loopback.0
+network 212.78.93.0/24
+exit
+exit
+write memory
+
+configure terminal
+interface int0
+ip nat outside
+exit
+interface COD
+ip nat inside
+exit
+interface DATA
+ip nat inside
+exit
+ip nat pool COD 192.168.10.1-192.168.10.254
+ip nat pool DATA 192.168.20.1-192.168.20.254
+ip nat source dynamic inside-to-outside pool COD overload interface int0
+ip nat source dynamic inside-to-outside pool DATA overload interface int0
+exit
+write memory
+show running-config | include nat
