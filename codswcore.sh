@@ -1,6 +1,7 @@
 #!/bin/bash
 hostnamectl set-hostname cod-sw-core.cod.ssa.prof; exec bash
 hostname -f
+apt-get update
 useradd master
 passwd master
 control sudo
