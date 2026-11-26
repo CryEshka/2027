@@ -92,33 +92,15 @@ write
 exit
 EOF
 
-# 1. Создаём таблицу nat
-apt-get install nftables -y
-nft add table ip nat
-
-# 2. Создаём цепочку postrouting
-nft add chain ip nat postrouting \ '{ type nat hook postrouting priority 0; }'
-
-# 3. Добавляем правила masquerade
-nft add rule ip nat postrouting \ ip saddr 78.23.0.0/16 oifname "ens18" counter masquerade
-nft add rule ip nat postrouting \ ip saddr 212.78.93.0/24 oifname "ens18" counter masquerade
-
-# 4. Сохраняем правила
-nft list ruleset | tee -a /etc/nftables/nftables.nft
-
-# 5. Очищаем рабочее пространство
-nft flush ruleset
-
-# 6. Включаем службу в автозагрузку
-systemctl enable --now nftables
-
+apt-get install iptables
+iptables -t nat -A POSTROUTING -o ens18 -j MASQUERADE
+iptables-save > /etc/sysctl.conf/iptables
+ 
 # 7. Проверяем
-nft list ruleset
-
 hostname -f
 ip -c -br a
 ip -c r
 vtysh -c "show ip route isis"
 vtysh -c "show ip bgp summary"
 ip -c r | grep 'bgp'
-nft list ruleset
+
