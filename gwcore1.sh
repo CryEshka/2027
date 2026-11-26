@@ -1,0 +1,124 @@
+#!/bin/bash
+# 1. Имя хоста и домен
+apt-get update
+hostnamectl set-hostname gw-core.ssa.prof
+hostname -f
+
+# 2. Учётная запись и пароль
+useradd -m master && echo 'master:P@ssw0rd'| chpasswd
+
+# 3. Настройка sudo БЕЗ запроса пароля
+apt-get install sudo
+control sudo
+control sudo help
+usermod -aG wheel master
+echo "master ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/master
+
+# Получаем IP-адрес по DHCP на интерфейсе ens19 (внешняя сеть)
+echo "TYPE=eth" > /etc/net/ifaces/ens18/options
+echo "BOOTPROTO=dhcp" >> /etc/net/ifaces/ens18/options
+systemctl restart network
+
+# Создаём директории для внутренних интерфейсов и dummy0
+mkdir -p /etc/net/ifaces/ens19
+mkdir -p /etc/net/ifaces/ens20
+mkdir -p /etc/net/ifaces/ens21
+mkdir -p /etc/net/ifaces/dummy0
+
+# Создаём файл options для каждого интерфейса
+echo "TYPE=eth" > /etc/net/ifaces/ens19/options
+echo "TYPE=eth" > /etc/net/ifaces/ens20/options
+echo "TYPE=eth" > /etc/net/ifaces/ens21/options
+echo "TYPE=dummy" > /etc/net/ifaces/dummy0/options
+
+# Назначаем IP-адреса в соответствии с L3-топологией
+echo "84.212.78.1/27" > /etc/net/ifaces/ens19/ipv4address # К GW-1
+echo "63.27.18.1/23" > /etc/net/ifaces/ens20/ipv4address # К GW-2
+echo "34.95.33.1/24" > /etc/net/ifaces/ens21/ipv4address # К GW-3
+echo "44.44.44.44/32" > /etc/net/ifaces/dummy0/ipv4address # Loopback
+
+# 1. Включаем пересылку пакетов (forwarding)
+sed -i "s/net.ipv4.ip_forward = 0/net.ipv4.ip_forward = 1/g" /etc/net/sysctl.conf
+systemctl restart network
+sysctl net.ipv4.ip_forward
+
+# 2. Устанавливаем FRRouting
+apt-get update && apt-get install -y frr
+
+# 3. Включаем демоны bgpd и isisd
+sed -i 's/bgpd=no/bgpd=yes/g' /etc/frr/daemons
+sed -i 's/isisd=no/isisd=yes/g' /etc/frr/daemons
+
+# 4. Включаем и добавляем в автозагрузку
+systemctl enable --now frr
+# 5. Проверяем запуск демонов
+ss -tulpn | grep -E 'bgp|isis'
+
+vtysh << 'EOF'
+enable
+configure terminal
+router isis 1
+ is-type level-1
+ net 49.0000.0440.4404.4044.00
+ metric-style wide
+ exit
+interface dummy0
+ ip router isis 1
+ exit
+interface ens19
+ ip router isis 1
+ exit
+interface ens20
+ ip router isis 1
+ exit
+interface ens21
+ ip router isis 1
+ exit
+# Настройка BGP
+router bgp 64499
+ bgp router-id 44.44.44.44
+ no bgp ebgp-requires-policy
+ neighbor 11.11.11.11 remote-as 64499
+ neighbor 22.22.22.22 remote-as 64499
+ neighbor 33.33.33.33 remote-as 64499
+ address-family ipv4 unicast
+ neighbor 11.11.11.11 default-originate
+ neighbor 22.22.22.22 default-originate
+ neighbor 33.33.33.33 default-originat
+exit
+ exit
+exit
+write
+exit
+EOF
+
+# 1. Создаём таблицу nat
+apt-get install nftables -y
+nft add table ip nat
+
+# 2. Создаём цепочку postrouting
+nft add chain ip nat postrouting \ '{ type nat hook postrouting priority 0; }'
+
+# 3. Добавляем правила masquerade
+nft add rule ip nat postrouting \ ip saddr 78.23.0.0/16 oifname "ens18" counter masquerade
+nft add rule ip nat postrouting \ ip saddr 212.78.93.0/24 oifname "ens18" counter masquerade
+
+# 4. Сохраняем правила
+nft list ruleset | tee -a /etc/nftables/nftables.nft
+
+# 5. Очищаем рабочее пространство
+nft flush ruleset
+
+# 6. Включаем службу в автозагрузку
+systemctl enable --now nftables
+
+# 7. Проверяем
+nft list ruleset
+
+hostname -f
+ip -c -br a
+ip -c r
+vtysh -c "show ip route isis"
+vtysh -c "show ip bgp summary"
+ip -c r | grep 'bgp'
+nft list ruleset
